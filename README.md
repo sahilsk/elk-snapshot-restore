@@ -44,6 +44,44 @@ After every thing is done, simply delete the instance
 
     vagrant destroy
 
+Troubleshooting
+------
+
+- cluster health is red and shard unassigned
+
+This is a common issue arising from the default index setting, in particularly,
+when you try to replicate on a single node. To fix this with transient cluster
+setting, do this:
+
+        curl -XPUT http://localhost:9200/_settings -d '{ "number_of_replicas" :0 }'
+
+Next, enable the cluster to reallocate shards (you can always turn this on after
+all is said and done):
+
+        curl -XPUT http://localhost:9200/_cluster/settings -d '
+        {
+                "transient" : {
+                            "cluster.routing.allocation.enable": true
+                                }
+        }'
+
+Now sit back and watch the cluster clean up the unassigned replica shards. If
+you want this to take effect with future indices, don't forget to modify
+elasticsearch.yml file with the following setting and bounce the cluster:
+
+        index.number_of_replicas: 0
+
+- check cluster health again
+
+        curl -s -XGET 'http://localhost:9200/_cluster/health?pretty
+
+
+
+
+
+
+
+
 References
 ------
 

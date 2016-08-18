@@ -1,0 +1,6 @@
+---
+
+- include: install.yml
+- include: aws_config.yml
+- include: restore_index.yml
+- debug: msg="you may now login to kibana http://{{ ansible_eth0.ipv4.address }}:5601"

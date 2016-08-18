@@ -1,0 +1,47 @@
+---
+- include: java.yml
+
+- name: package install
+  apt: name={{item}} state=present
+  with_items:
+   - wget
+   - curl
+   - python-pip
+   - awscli
+
+- name: pip install boto
+  pip: name={{item}} state='present'
+  with_items:
+   - boto
+
+- name: download elasticsearch deb
+  get_url: url=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/{{elasticsearch_version}}/elasticsearch-{{elasticsearch_version}}.deb dest=/tmp/elasticsearch-{{elasticsearch_version}}.deb
+
+- name: install elasticsearch
+  apt: deb=/tmp/elasticsearch-{{elasticsearch_version}}.deb
+  notify: restart elasticsearch
+
+- name: download kibana deb
+  get_url: url=https://download.elastic.co/kibana/kibana/kibana_{{kibana_version}}_amd64.deb dest=/tmp/kibana_{{kibana_version}}_amd64.deb
+
+- name: install kibana
+  apt: deb=/tmp/kibana_{{kibana_version}}_amd64.deb
+  notify: restart kibana
+
+- name: create file system registry
+  file: path=/mount/backups state=directory mode=0755  owner='elasticsearch' group='elasticsearch'
+
+- name: edit config file of elasticsearch
+  lineinfile: dest=/etc/elasticsearch/elasticsearch.yml regexp="^path\.repo{{':'}} \['/mount/backups'\]" line="path.repo{{':'}} ['/mount/backups']" state=present
+  notify: restart elasticsearch
+
+
+- name: run elasticsearch
+  service: name="elasticsearch" state=started
+
+- name: run kibana
+  service: name="kibana" state=started
+
+- meta: flush_handlers
+- wait_for: port=9200 delay=10
+

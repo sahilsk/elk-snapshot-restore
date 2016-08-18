@@ -1,0 +1,13 @@
+---
+- hosts: all
+  gather_facts: yes 
+  roles:
+   - elk_restore
+  sudo: true
+  vars:
+    - indexes:
+        - 'logstash-2016.03.17'
+        - 'logstash-2015.09.30'
+        - '<ADD INDEX HERE >'
+    - s3_aws_access_key: '<INSERT HERE>'
+    - s3_aws_secret_key: '<INSERT HERE>'

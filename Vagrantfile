@@ -81,7 +81,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :aws do |aws, override|
     aws.aws_profile = "default"
-    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 50 }]
+    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 500 }]
     aws.aws_dir = ENV['HOME'] + "/.aws/"
     aws.keypair_name = "sonu-ola"
 

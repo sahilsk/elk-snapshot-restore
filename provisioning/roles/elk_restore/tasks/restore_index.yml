@@ -9,7 +9,7 @@
   register: result
   ignore_errors: yes
 
-- name: register registry, if does not exist
+- name: register registry, if not already
   when: result|failed
   uri:
     url: http://localhost:9200/_snapshot/my_backup
@@ -17,21 +17,24 @@
     body: "{ 'type' {{':'}} 'fs', 'settings'{{':'}} { 'location'{{':'}} '/mount/backups/my_backup', 'compress'{{':'}} 'true' } }"
     body_format: json
 
-- name: copy metadata file
-  with_items: "{{ indexes }}"
-  shell: aws s3 cp s3://olamoneylogs/metadata-{{item}} /mount/backups/my_backup/metadata-{{item}} 
-
-- name: copy snapshot file
-  with_items: "{{ indexes }}"
-  shell: aws s3 cp s3://olamoneylogs/snapshot-{{item}} /mount/backups/my_backup/snapshot-{{item}}
-
 - name: make sure indices folder exist
   file: path=/mount/backups/my_backup/indices/{{item}} state=directory
   with_items: "{{indexes}}"
 
+- name: copy metadata file
+  with_items: "{{ indexes }}"
+  shell: aws s3 cp s3://olamoneylogs/metadata-{{item}} /mount/backups/my_backup/metadata-{{item}} 
+  ignore_errors: yes
+
+- name: copy snapshot file
+  with_items: "{{ indexes }}"
+  shell: aws s3 cp s3://olamoneylogs/snapshot-{{item}} /mount/backups/my_backup/snapshot-{{item}}
+  ignore_errors: yes
+
 - name: copy  indices
   with_items: "{{ indexes }}"
   shell: aws s3 sync s3://olamoneylogs/indices/{{item}}  /mount/backups/my_backup/indices/{{item}}
+  ignore_errors: yes
 
 - name: add wait_for_restore script
   template: src="wait_for_restore.sh" dest="/tmp/wait_for_restore.sh" mode=0755
@@ -39,15 +42,4 @@
 - name: restore index
   shell: curl -s -XPOST http://localhost:9200/_snapshot/my_backup/{{item}}/_restore && /tmp/wait_for_restore.sh {{item}}
   with_items: "{{ indexes }}"
-
-#- name: restore index
-#  with_items: "{{ indexes }}"
-#  uri:
-#    url: "http://localhost:9200/_snapshot/my_backup/{{item}}/_restore"
-#    method: POST
-#  shell: /tmp/wait_for_restore.sh
-#  ignore_errors: yes
-
-- name: progress status
-  with_items: "{{ indexes }}"
-  shell: curl  -XGET http://localhost:9200/{{item}}/_recovery?pretty | grep "%"
+  ignore_errors: yes

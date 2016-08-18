@@ -88,8 +88,7 @@ Vagrant.configure("2") do |config|
     aws.ami  = "ami-21d30f42"
     aws.subnet_id = "subnet-52053625"
     aws.security_groups = ['sg-bd4a88d9']
-    aws.tags = { "Name"=> "elk-restore-sk"}
-    #aws.tags = { "Name"=> "elk-restore-"+ Time.now.to_i.to_s }
+    aws.tags = { "Name"=> "elk-restore-"+ Time.now.to_i.to_s }
 
     override.ssh.username = "ubuntu"
     override.ssh.private_key_path = "/Users/sonu.meena/KEYS/sonu-ola-aws.pem"

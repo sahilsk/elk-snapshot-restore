@@ -17,26 +17,11 @@ Instructions
 - Also mention how much GB space is required on server. Default: 50GB
     - get idea from index size
 
-## Edit playbook.yml file
+## Create playbook.yml file
 
-- put index list to restore
-- put s3 creds used to pull them from aws
-
-```
----
-- hosts: all
-  gather_facts: yes
-  roles:
-   - elk_restore
-  sudo: true
-  vars:
-    - indexes:
-        - 'logstash-2016.03.17'
-        - 'logstash-2015.09.30'
-        - <add more indexes here >
-    - s3_aws_access_key: '<aws creds>'
-    - s3_aws_secret_key: '<aws creds>'
-```
+- copy **playbook.yml.sample** to **playbook.yml** and edit
+    - put index list to restore
+    - put s3 creds used to pull them from aws
 
 
 ## how-to

@@ -7,14 +7,15 @@ Instructions
     - http://docs.ansible.com/ansible/intro_installation.html#latest-releases-via-apt-ubuntu
 - your workstation should be aws configured
     - AWS Secrets to launch instance
-- AWS Secrets to access and download backukp index
     - security group with enough ports opened
     - keypair, subnet id to use
+- AWS Secrets to download backukp index from s3 bucket
 
 ## Edit Vagrantfile 
 
 - put above asked information in vagrantfile
 - Also mention how much GB space is required on server. Default: 50GB
+    - get idea from index size
 
 ## Edit playbook.yml file
 
@@ -58,8 +59,8 @@ After every thing is done, simply delete the instance
 
     vagrant destroy
 
-
 References
 ------
 
 - https://www.vagrantup.com/docs/provisioning/ansible_intro.html
+- https://github.com/sahilsk/DevOp-Tools-and-Scripts/blob/master/Articles/elasticsearch/restore_snapshot.md
